@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "BaseItem.generated.h"
 
+class ARPGGameCharacter;
+
 UCLASS()
 class RPGGAME_API ABaseItem : public AActor
 {
@@ -20,14 +22,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh)
 	class UStaticMeshComponent* MeshComp;
 
+	// 아이템 습득
 	virtual void OnPickup(APawn* Owner);
 
+	// 아이템 사용
 	virtual void OnUsed(APawn* Owner);
 
+	// 아이템이 포커싱 되었을 때
 	void OnFouceItem();
 
+	// 아이템이 포커싱이 아닐 때
 	void EndFouceItem();
 
+	// 아이템 정보
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Information)
 	FItemInfo Info;
 };

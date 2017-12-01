@@ -46,14 +46,31 @@ void UUIInventory::SetupGrid(UUniformGridSlot * Slot)
 
 void UUIInventory::AddItem(FItemInfo NewItem)
 {
-	for (int i = 0; i < SlotArr.Num(); ++i)
+	// 이미 아이템이 있는지 확인후 없을 시 빈 슬롯에 아이템 저장
+	if (!IsPresentItem(NewItem))
 	{
-		if (SlotArr[i]->IsEmpty())
+		for (auto &Slot : SlotArr)
 		{
-			SlotArr[i]->SetupSlot(NewItem);
-			break;
+			if (Slot->IsEmpty())
+			{
+				Slot->SetupSlot(NewItem);
+				break;
+			}
 		}
 	}
+}
+
+bool UUIInventory::IsPresentItem(FItemInfo & NewItem)
+{
+	for (auto &Slot : SlotArr)
+	{
+		if (Slot->GetItemInfo().Name == NewItem.Name)
+		{
+			Slot->SetupSlot(NewItem);
+			return true;
+		}
+	}
+	return false;
 }
 
 

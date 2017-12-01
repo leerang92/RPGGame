@@ -15,11 +15,12 @@ ABaseItem::ABaseItem()
 
 void ABaseItem::OnPickup(APawn* Owner)
 {
-	UE_LOG(LogClass, Warning, TEXT("Pickup Item"));
+	SetLifeSpan(0.001f);
 }
 
 void ABaseItem::OnUsed(APawn* Owner)
 {
+
 }
 
 void ABaseItem::OnFouceItem()

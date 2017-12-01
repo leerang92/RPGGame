@@ -20,6 +20,8 @@ ARPGGameCharacter::ARPGGameCharacter()
 	bPickupItem = false;
 
 	ViewDistance = 500.0f;
+	MaxHP = 100.0f;
+	HP = MaxHP;
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -232,7 +234,6 @@ void ARPGGameCharacter::PickupItem()
 	if (bPickupItem)
 	{
 		CurrentViewItem->OnPickup(this);
-		bWeapon = true;
 	}
 }
 
@@ -240,10 +241,11 @@ void ARPGGameCharacter::AddItem(ABaseItem * Item)
 {
 	if (Item != nullptr)
 	{
-		if (CurrentWeapon == nullptr)
+		if (CurrentWeapon == nullptr && Item->Info.Type == EItemType::WEAPON)
 		{
 			CurrentWeapon = Item;
 			CurrentWeapon->OnUsed(this);
+			bWeapon = true;
 		}
 		else
 		{
@@ -252,6 +254,12 @@ void ARPGGameCharacter::AddItem(ABaseItem * Item)
 			Item->SetLifeSpan(0.001f);
 		}
 	}
+}
+
+void ARPGGameCharacter::SetHP(float NewHP)
+{
+	UE_LOG(LogClass, Warning, TEXT("Set Health : %f"), NewHP);
+	HP = FMath::Min((HP + NewHP), MaxHP);
 }
 
 void ARPGGameCharacter::ActiveInventory()

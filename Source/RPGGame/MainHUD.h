@@ -24,6 +24,10 @@ public:
 	// Inventory 활성화 함수
 	void ActiveInventory();
 
+	void ShowMouseCursor(bool bShow);
+
+	bool IsHiddeCursor() const;
+
 protected:
 	// Inventory Class
 	UPROPERTY()

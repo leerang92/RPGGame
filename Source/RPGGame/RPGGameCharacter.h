@@ -86,6 +86,11 @@ public:
 	// 습득 아이템을 배열에 추가
 	void AddItem(ABaseItem* Item);
 
+	/* Health */
+	void SetHP(float NewHP);
+
+	FORCEINLINE float GetMaxHP() const { return MaxHP; }
+
 private:
 	/* UI */
 	UPROPERTY()
@@ -124,5 +129,11 @@ private:
 
 	/* Weapon */
 	class ABaseItem* CurrentWeapon;
+
+	/* Character State */
+	float HP;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	float MaxHP;
 };
 
