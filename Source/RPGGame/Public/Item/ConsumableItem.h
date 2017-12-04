@@ -19,4 +19,8 @@ public:
 	virtual void OnPickup(APawn* Owner) override;
 	
 	virtual void OnUsed(APawn* Owner) override;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = Buff, meta = (AllowPrivateAccess = "true"))
+	FBuffInfo BuffInfo;
 };

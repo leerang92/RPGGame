@@ -21,26 +21,11 @@ void UUIInventory::CreateItemList()
 		UUserWidget* Slot = CreateWidget<UUserWidget>(GetWorld(), SlotClass);
 		if (Slot != nullptr)
 		{
-			SetupGrid(GridPanel->AddChildToUniformGrid(Slot));
-			UBaseItemSlot* ItemSlot = Cast<UBaseItemSlot>(Slot);
+			SetupGrid(Slot);
+			UUIInventorySlot* ItemSlot = Cast<UUIInventorySlot>(Slot);
 			check(ItemSlot);
 			SlotArr.Add(ItemSlot);
 		}
-	}
-}
-
-void UUIInventory::SetupGrid(UUniformGridSlot * Slot)
-{
-	Slot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
-	Slot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
-	Slot->SetColumn(Column);
-	Slot->SetRow(Row);
-
-	++Column;
-	if (Column >= ColumnSize)
-	{
-		Column = 0;
-		++Row;
 	}
 }
 

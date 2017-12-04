@@ -50,3 +50,25 @@ public:
 		ItemClass(nullptr)
 	{}
 };
+
+USTRUCT(BlueprintType)
+struct FBuffInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, Category = Buff)
+	FName Name;
+
+	UPROPERTY(EditAnywhere, Category = Buff)
+	UTexture2D* Image;
+
+	UPROPERTY(EditAnywhere, Category = Buff)
+	float Duration;
+
+public:
+	FBuffInfo() :
+		Name(TEXT("NoName")),
+		Image(nullptr),
+		Duration(0.0f)
+	{}
+};

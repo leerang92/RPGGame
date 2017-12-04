@@ -91,12 +91,16 @@ public:
 
 	FORCEINLINE float GetMaxHP() const { return MaxHP; }
 
+	FORCEINLINE UMainHUD* GetMainHUD() const { return MainHUD; }
+
 private:
 	/* UI */
 	UPROPERTY()
 	class UMainHUD* MainHUD;
 
 	void ActiveInventory();
+
+	void ActiveSkillUI();
 
 	/* Attack */
 	bool bWeapon;
@@ -135,5 +139,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
 	float MaxHP;
-};
 
+	template<int Key>
+	void UseSkill();
+};

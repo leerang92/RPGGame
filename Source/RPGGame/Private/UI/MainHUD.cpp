@@ -7,11 +7,20 @@ void UMainHUD::NativeConstruct()
 	Super::NativeConstruct();
 
 	bInventory = false;
+	bSkill = false;
 
 	// Inventory ¼û±â±â
 	if (InventoryUI != nullptr)
 	{
 		InventoryUI->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (SkillUI != nullptr)
+	{
+		SkillUI->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (GetUI != nullptr)
+	{
+		GetUI->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -28,6 +37,34 @@ void UMainHUD::ActiveInventory()
 		InventoryUI->SetVisibility(ESlateVisibility::Hidden);
 		ShowMouseCursor(false);
 		bInventory = false;
+	}
+}
+
+void UMainHUD::ActiveSkillUI()
+{
+	if (!bSkill)
+	{
+		SkillUI->SetVisibility(ESlateVisibility::Visible);
+		ShowMouseCursor(true);
+		bSkill = true;
+	}
+	else
+	{
+		SkillUI->SetVisibility(ESlateVisibility::Hidden);
+		ShowMouseCursor(false);
+		bSkill = false;
+	}
+}
+
+void UMainHUD::ActiveGetUI(bool bActive)
+{
+	if (bActive)
+	{
+		GetUI->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		GetUI->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -48,7 +85,7 @@ void UMainHUD::ShowMouseCursor(bool bShow)
 
 bool UMainHUD::IsHiddeCursor() const
 {
-	return !bInventory;
+	return bInventory && bSkill;
 }
 
 

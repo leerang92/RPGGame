@@ -17,4 +17,9 @@ void AConsumableItem::OnPickup(APawn * Owner)
 void AConsumableItem::OnUsed(APawn * Owner)
 {
 	Super::OnUsed(Owner);
+
+	ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(Owner);
+	check(PC);
+
+	PC->GetMainHUD()->GetBuffBar()->SetBuffIcon(BuffInfo);
 }

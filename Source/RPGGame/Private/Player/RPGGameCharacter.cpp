@@ -83,6 +83,7 @@ void ARPGGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	// Active UI
 	InputComponent->BindAction("Inventory", IE_Pressed, this, &ARPGGameCharacter::ActiveInventory);
+	InputComponent->BindAction("Skill", IE_Pressed, this, &ARPGGameCharacter::ActiveSkillUI);
 
 	// Attack
 	InputComponent->BindAction("Attack", IE_Pressed, this, &ARPGGameCharacter::StartAttack);
@@ -90,6 +91,14 @@ void ARPGGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	// PickupItem
 	InputComponent->BindAction("Pickup", IE_Pressed, this, &ARPGGameCharacter::PickupItem);
+
+	// Use Skill
+	InputComponent->BindAction("Skill_1", IE_Pressed, this, &ARPGGameCharacter::UseSkill<0>);
+	InputComponent->BindAction("Skill_2", IE_Pressed, this, &ARPGGameCharacter::UseSkill<1>);
+	InputComponent->BindAction("Skill_3", IE_Pressed, this, &ARPGGameCharacter::UseSkill<2>);
+	InputComponent->BindAction("Skill_4", IE_Pressed, this, &ARPGGameCharacter::UseSkill<3>);
+	InputComponent->BindAction("Skill_5", IE_Pressed, this, &ARPGGameCharacter::UseSkill<4>);
+	InputComponent->BindAction("Skill_6", IE_Pressed, this, &ARPGGameCharacter::UseSkill<5>);
 }
 
 void ARPGGameCharacter::BeginPlay()
@@ -115,6 +124,7 @@ void ARPGGameCharacter::Tick(float DeltaSecondes)
 		if (CurrentViewItem)
 		{
 			CurrentViewItem->EndFouceItem();
+			MainHUD->ActiveGetUI(false);
 		}
 		bPickupItem = false;
 	}
@@ -124,6 +134,7 @@ void ARPGGameCharacter::Tick(float DeltaSecondes)
 	if (CurrentViewItem != nullptr)
 	{
 		CurrentViewItem->OnFouceItem();
+		MainHUD->ActiveGetUI(true);
 		bPickupItem = true;
 	}
 
@@ -258,7 +269,6 @@ void ARPGGameCharacter::AddItem(ABaseItem * Item)
 
 void ARPGGameCharacter::SetHP(float NewHP)
 {
-	UE_LOG(LogClass, Warning, TEXT("Set Health : %f"), NewHP);
 	HP = FMath::Min((HP + NewHP), MaxHP);
 }
 
@@ -268,5 +278,19 @@ void ARPGGameCharacter::ActiveInventory()
 	{
 		MainHUD->ActiveInventory();
 	}
+}
+
+void ARPGGameCharacter::ActiveSkillUI()
+{
+	if (MainHUD)
+	{
+		MainHUD->ActiveSkillUI();
+	}
+}
+
+template<int Key>
+void ARPGGameCharacter::UseSkill()
+{
+	MainHUD->GetSkillBar()->OnUsedSkill(Key);
 }
 
