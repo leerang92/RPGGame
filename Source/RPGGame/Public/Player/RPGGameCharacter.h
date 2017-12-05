@@ -93,6 +93,17 @@ public:
 
 	FORCEINLINE UMainHUD* GetMainHUD() const { return MainHUD; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
+	TArray<UAnimMontage*> AttackAnims;
+
+	float SetAnimation(UAnimMontage* Animation, float InPlayRate = 1.0f, FName StartSelectName = NAME_None);
+
+	void StopAttackAnim();
+
+	void ComboAttack();
+
+	bool bInputAttack;
+
 private:
 	/* UI */
 	UPROPERTY()
@@ -103,9 +114,9 @@ private:
 	void ActiveSkillUI();
 
 	/* Attack */
-	bool bWeapon;
+	int AttackIndex;
 
-	bool bAttack;
+	bool bPlayAttack;
 
 	void StartAttack();
 

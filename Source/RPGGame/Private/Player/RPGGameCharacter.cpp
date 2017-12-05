@@ -15,13 +15,14 @@
 
 ARPGGameCharacter::ARPGGameCharacter()
 {
-	bWeapon = false;
-	bAttack = false;
+	bInputAttack = false;
 	bPickupItem = false;
+	bPlayAttack = false;
 
 	ViewDistance = 500.0f;
 	MaxHP = 100.0f;
 	HP = MaxHP;
+	AttackIndex = 1;
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -193,26 +194,49 @@ void ARPGGameCharacter::MoveRight(float Value)
 
 bool ARPGGameCharacter::IsAttack() const
 {
-	return bWeapon;
+	return CurrentWeapon != nullptr && AttackAnims.Num() > 0;
 }
 
 bool ARPGGameCharacter::IsAttacking() const
 {
-	return bAttack;
+	return bPlayAttack;
 }
-
 
 void ARPGGameCharacter::StartAttack()
 {
-	if (IsAttack())
+	if (IsAttack() && !IsAttacking() && !bInputAttack)
 	{
-		bAttack = true;
+		AttackIndex = 0;
+		SetAnimation(AttackAnims[AttackIndex]);
+		bPlayAttack = true;
+		bInputAttack = true;
 	}
 }
 
 void ARPGGameCharacter::StopAttack()
 {
-	bAttack = false;
+	bInputAttack = false;
+	//bPlayAttack = false;
+}
+
+float ARPGGameCharacter::SetAnimation(UAnimMontage * Animation, float InPlayRate, FName StartSelectName)
+{
+	return PlayAnimMontage(Animation, InPlayRate, StartSelectName);
+}
+
+void ARPGGameCharacter::StopAttackAnim()
+{
+	bPlayAttack = false;
+}
+
+void ARPGGameCharacter::ComboAttack()
+{
+	++AttackIndex;
+	if(AttackIndex >= AttackAnims.Num())
+	{
+		AttackIndex = 0;
+	}
+	SetAnimation(AttackAnims[AttackIndex]);
 }
 
 ABaseItem * ARPGGameCharacter::GetPickupItem() const
@@ -256,7 +280,6 @@ void ARPGGameCharacter::AddItem(ABaseItem * Item)
 		{
 			CurrentWeapon = Item;
 			CurrentWeapon->OnUsed(this);
-			bWeapon = true;
 		}
 		else
 		{
