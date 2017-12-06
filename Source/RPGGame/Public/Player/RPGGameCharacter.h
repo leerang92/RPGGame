@@ -76,15 +76,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI)
 	TSubclassOf<class UUserWidget> MainHUDClass;
-	
-	UFUNCTION(BlueprintCallable, Category = Attack)
-	bool IsAttack() const;
-
-	UFUNCTION(BlueprintCallable, Category = Attack)
-	bool IsAttacking() const;
-
-	// 습득 아이템을 배열에 추가
-	void AddItem(ABaseItem* Item);
 
 	/* Health */
 	void SetHP(float NewHP);
@@ -93,12 +84,26 @@ public:
 
 	FORCEINLINE UMainHUD* GetMainHUD() const { return MainHUD; }
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
-	TArray<UAnimMontage*> AttackAnims;
+	// 습득 아이템을 배열에 추가
+	void AddItem(ABaseItem* Item);
 
+	/* 애니메이션 */
 	float SetAnimation(UAnimMontage* Animation, float InPlayRate = 1.0f, FName StartSelectName = NAME_None);
 
 	void StopAttackAnim();
+
+public:
+	/* 공격 */
+	virtual float TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser);
+
+	UFUNCTION(BlueprintCallable, Category = Attack)
+	bool IsAttack() const;
+
+	UFUNCTION(BlueprintCallable, Category = Attack)
+	bool IsAttacking() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
+	TArray<UAnimMontage*> AttackAnims;
 
 	void ComboAttack();
 
@@ -122,9 +127,25 @@ private:
 
 	void StopAttack();
 
+	/* Character State */
+	float HP;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	float MaxHP;
+
+	/* Skill */
+	template<int Key>
+	void UseSkill();
+
+	void OnDeath();
+
+private:
 	/* Item */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = View, meta = (AllowPrivateAccess = "true"))
 	float ViewDistance;
+
+	// 현재 장착한 무기 클래스
+	class ABaseItem* CurrentWeapon;
 
 	// 아이템 줍기 가능 여부
 	bool bPickupItem;
@@ -141,16 +162,4 @@ private:
 
 	// 아이템 줍기 함수
 	void PickupItem();
-
-	/* Weapon */
-	class ABaseItem* CurrentWeapon;
-
-	/* Character State */
-	float HP;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
-	float MaxHP;
-
-	template<int Key>
-	void UseSkill();
 };

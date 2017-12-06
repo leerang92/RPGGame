@@ -23,6 +23,8 @@ public:
 
 	virtual void Possess(class APawn* InPawn) override;
 
+	virtual void UnPossess() override;
+
 	void SetTargetPawn(APawn* NewTarget);
 
 	void SetAIState(EAIState State);

@@ -18,22 +18,25 @@ void ABaseMonsterController::Possess(APawn * InPawn)
 
 	ABaseMonster* Monster = Cast<ABaseMonster>(InPawn);
 	check(Monster);
-	//if (Monster)
-	//{
-	//	if (Monster->BehaviorTree->BlackboardAsset)
-	//	{
-
-	//	}
-	//}
-	BlackboardComp->InitializeBlackboard(*Monster->BehaviorTree->BlackboardAsset);
+	if (Monster->BehaviorTree->BlackboardAsset)
+	{
+		BlackboardComp->InitializeBlackboard(*Monster->BehaviorTree->BlackboardAsset);
+	}
 	BehaviorComp->StartTree(*Monster->BehaviorTree);
+}
+
+void ABaseMonsterController::UnPossess()
+{
+	Super::UnPossess();
+
+	UE_LOG(LogClass, Warning, TEXT("Die"));
+	BehaviorComp->StopTree();
 }
 
 void ABaseMonsterController::SetTargetPawn(APawn * NewTarget)
 {
 	if (BlackboardComp)
 	{
-		UE_LOG(LogClass, Warning, TEXT("Set Target"));
 		BlackboardComp->SetValueAsObject(TargetPawnKeyName, NewTarget);
 	}
 }

@@ -7,6 +7,7 @@
 #include "UIBuffBar.h"
 #include "UISkill.h"
 #include "UISkillBar.h"
+#include "UIPlayerState.h"
 #include "Blueprint/UserWidget.h"
 #include "MainHUD.generated.h"
 
@@ -32,11 +33,13 @@ public:
 
 	FORCEINLINE UUISkill* GetSkillUI() const { return SkillUI; }
 
+	void ActiveGetUI(bool bActive);
+
 	FORCEINLINE UUIBuffBar* GetBuffBar() const { return BuffBar; }
 
 	FORCEINLINE UUISkillBar* GetSkillBar() const { return SkillBar; }
 
-	void ActiveGetUI(bool bActive);
+	FORCEINLINE UUIPlayerState* GetPlayerState() const { return PlayerStateUI; }
 
 protected:
 	// Inventory Class
@@ -55,11 +58,15 @@ protected:
 	UPROPERTY()
 	class UUserWidget* GetUI;
 
+	UPROPERTY()
+	class UUIPlayerState* PlayerStateUI;
+
 private:
 	// Inventory 활성화 여부
 	bool bInventory;
 
 	bool bSkill;
+
 	// 마우스 커서 활성화
 	void ShowMouseCursor(bool bShow);
 

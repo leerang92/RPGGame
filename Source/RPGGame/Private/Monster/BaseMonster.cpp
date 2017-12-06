@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BaseMonster.h"
+#include "UIDamage.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
-#include "RPGGameCharacter.h"
 
 // Sets default values
 ABaseMonster::ABaseMonster()
@@ -11,6 +11,9 @@ ABaseMonster::ABaseMonster()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bAttacking = false;
+
+	MaxHP = 100.0f;
+	HP = MaxHP;
 
 	AttackIndex = 0;
 	AttackDistance = 200.0f;
@@ -31,11 +34,15 @@ ABaseMonster::ABaseMonster()
 void ABaseMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	MonsterCon = Cast<ABaseMonsterController>(GetController());
-	check(MonsterCon);
-	MonsterCon->SetAIState(AIState);
 
+	HP = MaxHP;
+
+	if (GetController())
+	{
+		MonsterCon = Cast<ABaseMonsterController>(GetController());
+		check(MonsterCon);
+		MonsterCon->SetAIState(AIState);
+	}
 }
 
 // Called every frame
@@ -46,10 +53,33 @@ void ABaseMonster::Tick(float DeltaTime)
 
 float ABaseMonster::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
-	float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	UE_LOG(LogClass, Warning, TEXT("Take Damage : %f"), ActualDamage);
-	return ActualDamage;
+	//float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	HP -= Damage;
+	HP = FMath::Max(HP, 0.0f);
+
+	CreateDamageWidget(Damage);
+
+	if (HP <= 0.0f)
+	{
+		OnDeath();
+	}
+	return Damage;
 }
+
+void ABaseMonster::CreateDamageWidget(float Damage)
+{
+	if (DamageWidgetClass != nullptr)
+	{
+		UUserWidget* DamageWidget = CreateWidget<UUserWidget>(GetWorld(), DamageWidgetClass);
+		DamageWidget->AddToViewport();
+		UUIDamage* DamageUI = Cast<UUIDamage>(DamageWidget);
+		if (DamageUI)
+		{
+			DamageUI->SetDamage(Damage, GetActorLocation());
+		}
+	}
+}
+
 
 void ABaseMonster::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
@@ -80,11 +110,29 @@ bool ABaseMonster::IsAttack()
 
 void ABaseMonster::ComboAttack()
 {
+	if (IsAlive())
+	{
+		bAttack = true;
+		if (AttackIndex >= AttackAnims.Num())
+		{
+			AttackIndex = 0;
+		}
+		PlayAnimation(AttackAnims[AttackIndex]);
+		++AttackIndex;
+	}
 }
 
 float ABaseMonster::PlayAnimation(UAnimMontage * Animation, float InPlayRate, FName StartSelectName)
 {
 	return PlayAnimMontage(Animation, InPlayRate, StartSelectName);
+}
+
+void ABaseMonster::OnDeath()
+{
+	// Controller ÇØÁ¦
+	DetachFromControllerPendingDestroy();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 void ABaseMonster::SetFocus()

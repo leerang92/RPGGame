@@ -21,7 +21,6 @@ ARPGGameCharacter::ARPGGameCharacter()
 
 	ViewDistance = 500.0f;
 	MaxHP = 100.0f;
-	HP = MaxHP;
 	AttackIndex = 1;
 
 	// Set size for collision capsule
@@ -105,6 +104,8 @@ void ARPGGameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 void ARPGGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HP = MaxHP;
 
 	// Create MainHUD
 	UUserWidget* HUD = CreateWidget<UUserWidget>(GetWorld(), MainHUDClass);
@@ -192,6 +193,14 @@ void ARPGGameCharacter::MoveRight(float Value)
 	}
 }
 
+float ARPGGameCharacter::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	SetHP(-ActualDamage);
+
+	return ActualDamage;
+}
+
 bool ARPGGameCharacter::IsAttack() const
 {
 	return CurrentWeapon != nullptr && AttackAnims.Num() > 0;
@@ -217,6 +226,10 @@ void ARPGGameCharacter::StopAttack()
 {
 	bInputAttack = false;
 	//bPlayAttack = false;
+}
+
+void ARPGGameCharacter::OnDeath()
+{
 }
 
 float ARPGGameCharacter::SetAnimation(UAnimMontage * Animation, float InPlayRate, FName StartSelectName)
@@ -293,6 +306,15 @@ void ARPGGameCharacter::AddItem(ABaseItem * Item)
 void ARPGGameCharacter::SetHP(float NewHP)
 {
 	HP = FMath::Min((HP + NewHP), MaxHP);
+	if (MainHUD != nullptr && MainHUD->GetPlayerState() != nullptr)
+	{
+		MainHUD->GetPlayerState()->SetHP(HP);
+	}
+
+	if (HP <= 0.0f)
+	{
+		OnDeath();
+	}
 }
 
 void ARPGGameCharacter::ActiveInventory()

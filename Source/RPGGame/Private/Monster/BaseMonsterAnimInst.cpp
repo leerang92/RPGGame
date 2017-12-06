@@ -38,5 +38,6 @@ void UBaseMonsterAnimInst::AnimNotify_StopAttack(UAnimNotify * Notify)
 	if (Monster)
 	{
 		Monster->bAttack = false;
+		Monster->AttackIndex = 0;
 	}
 }

@@ -3,6 +3,7 @@
 #include "EquipItem.h"
 #include "RPGGameCharacter.h"
 #include "BaseMonster.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 AEquipItem::AEquipItem()
 {
@@ -47,7 +48,16 @@ void AEquipItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * O
 				TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 				FDamageEvent DamageEvent(ValidDamageTypeClass);
 				Monster->TakeDamage(10.0f, DamageEvent, nullptr, nullptr);
+
+				PlayParticle(AttackFX, OtherActor->GetActorLocation());
 			}
 		}
 	}
+}
+
+
+UParticleSystemComponent * AEquipItem::PlayParticle(UParticleSystem * NewFX, FVector SpawnLocation)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), NewFX, SpawnLocation);
+	return nullptr;
 }
