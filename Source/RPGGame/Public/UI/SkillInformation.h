@@ -19,12 +19,20 @@ struct FSkillInfo
 	float Damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill)
+	float CoolTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill)
 	UTexture2D* Image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill)
+	UAnimMontage* SkillAnim;
 
 public:
 	FSkillInfo() :
 		Name(TEXT("No Name")),
 		Damage(1.0f),
-		Image(nullptr)
+		CoolTime(1.0f),
+		Image(nullptr),
+		SkillAnim(nullptr)
 	{}
 };

@@ -8,10 +8,6 @@
 
 AMasterGrunt::AMasterGrunt()
 {
-	bInTarget = false;
-	bAttack = false;
-	bAttacking = false;
-
 	RWeaponSocketName = TEXT("b_MF_Weapon_R");
 	LWeaponSocketName = TEXT("b_MF_Weapon_L");
 
@@ -37,16 +33,20 @@ void AMasterGrunt::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsTarget())
+	if (IsTarget() && IsAlive())
 	{
-		if (IsAttack() && !bAttack)
+		// 공격 중이 아니며 공격 가능일 때 공격 시작
+		if (IsAttack() && !bAttacking)
 		{
 			MonsterCon->SetAIState(EAIState::ATTACK);
+			MonsterCon->SetFocus(nullptr);
 			ComboAttack();
 		}
-		else if(!IsAttack() && !bAttacking)
+		// 공격중이 아니며 공격이 불가능할 때 타겟으로 이동
+		else if (!IsAttack() && !bAttacking)
 		{
 			MonsterCon->SetAIState(EAIState::MOVE);
+			MonsterCon->SetFocus(TargetPawn);
 			//SetFocus();
 		}
 	}
@@ -56,10 +56,9 @@ void AMasterGrunt::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AAct
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(OtherActor);
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
 		if (PC)
 		{
-			bInTarget = true;
 			TargetPawn = PC;
 			MonsterCon->SetTargetPawn(TargetPawn);
 			MonsterCon->SetAIState(EAIState::MOVE);
@@ -71,7 +70,7 @@ void AMasterGrunt::OnMeleeOverlapBegin(UPrimitiveComponent * OverlappedComp, AAc
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(OtherActor);
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
 		if (PC && bAttacking)
 		{
 			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
@@ -81,12 +80,26 @@ void AMasterGrunt::OnMeleeOverlapBegin(UPrimitiveComponent * OverlappedComp, AAc
 	}
 }
 
-void AMasterGrunt::ComboAttack()
+void AMasterGrunt::OnAttackOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	Super::ComboAttack();
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
+	{
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
+		if (PC)
+		{
+			bIsSetAttack = true;
+		}
+	}
 }
 
-
-void AMasterGrunt::StopAgro()
+void AMasterGrunt::OnAttackOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
+	{
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
+		if (PC)
+		{
+			bIsSetAttack = false;
+		}
+	}
 }

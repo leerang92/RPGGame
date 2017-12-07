@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "Types.h"
-#include "RPGGameCharacter.h"
+#include "RPGCharacter.h"
 #include "UserWidget.h"
+#include "BaseItem.h"
 #include "BaseMonsterController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/Character.h"
@@ -38,7 +39,43 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
 	float MaxHP;
 
+	/* Target Focus */
+	UPROPERTY(EditAnywhere, Category = Rotation)
+	float LookSpeed;
+
+	void SetFocus();
+
+	// 생존 여부
+	UFUNCTION(BlueprintCallable, Category = Health)
+	FORCEINLINE bool IsAlive() const { return HP > 0.0f; }
+
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSubclassOf<UUserWidget> DamageWidgetClass;
+
+protected:
+	float HP;
+
+	UPROPERTY()
+	class ABaseMonsterController* MonsterCon;
+
+	UPROPERTY()
+	APawn* TargetPawn;
+
+	EAIState AIState;
+
+	FTimerHandle WaitTimer;
+
+	// 몽타주 애니메이션 재생
+	float PlayAnimation(UAnimMontage* Animation, float InPlayRate = 1.0f, FName StartSelectName = NAME_None);
+
+	// 받은 데미지 표시 UI 생성
+	void CreateDamageWidget(float Damage);
+
+public:
 	/* Attack */
+	UPROPERTY(EditAnywhere, Category = Collider)
+	UCapsuleComponent* AttackColl;
+
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TArray<UAnimMontage*> AttackAnims;
 
@@ -50,49 +87,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
 	float AttackDistance;
 
-	UPROPERTY(BlueprintReadOnly, Category = Attack)
-	bool bAttack;
-
 	bool bAttacking;
 
+	bool bIsSetAttack;
+
 	bool IsAttack();
-
-	void SetFocus();
-
-	// 포커스 속도
-	UPROPERTY(EditAnywhere, Category = Rotation)
-	float LookSpeed;
-
-	UFUNCTION(BlueprintCallable, Category = Health)
-	FORCEINLINE bool IsAlive() const { return HP > 0.0f; }
-
-	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UUserWidget> DamageWidgetClass;
-
-protected:
-	float HP;
-
-	UPROPERTY()
-	APawn* TargetPawn;
-
-	EAIState AIState;
-
-	UPROPERTY()
-	class ABaseMonsterController* MonsterCon;
-
-	FTimerHandle WaitTimer;
-
-	UFUNCTION()
-	virtual void OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnMeleeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	float PlayAnimation(UAnimMontage* Animation, float InPlayRate = 1.0f, FName StartSelectName = NAME_None);
-
-	void OnDeath();
-
-	void CreateDamageWidget(float Damage);
 
 private:
 	/* 포커스 변수들 */
@@ -101,4 +100,28 @@ private:
 	float Angular;
 
 	float UpdateRotation;
+
+protected:
+	/* Drop Item */
+	UPROPERTY(EditAnywhere, Category = Item, meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<ABaseItem>> DropItemArr;
+
+	void ItemDrop();
+
+	void OnDeath();
+
+protected:
+	/* 충돌 처리 */
+	UFUNCTION()
+	virtual void OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnMeleeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 };

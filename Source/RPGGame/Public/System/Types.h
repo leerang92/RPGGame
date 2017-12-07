@@ -14,3 +14,10 @@ enum EAIState
 	ATTACK,
 	DIE,
 };
+
+UENUM(BlueprintType)
+enum EEffectType
+{
+	BLOOD,
+	HIT,
+};

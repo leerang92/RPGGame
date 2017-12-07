@@ -35,10 +35,16 @@ struct FItemInfo
 	FName Context;
 
 	UPROPERTY(EditAnywhere, Category = Item)
+	float DropRate;
+
+	UPROPERTY(EditAnywhere, Category = Item)
 	TEnumAsByte<EItemType> Type;
 
 	UPROPERTY(EditAnywhere, Category = Item)
 	TSubclassOf<class ABaseItem> ItemClass;
+
+private:
+	float MaximumDropRate = 100.0f;
 
 public:
 	FItemInfo() :
@@ -49,6 +55,15 @@ public:
 		Type(EItemType::NONE),
 		ItemClass(nullptr)
 	{}
+
+	bool IsDropItem()
+	{
+		float Rate = FMath::Fmod(FMath::FRand(), MaximumDropRate) * 100.0f;
+		UE_LOG(LogClass, Warning, TEXT("%f"), Rate);
+		return DropRate > Rate;
+		//Rate %= MaximumDropRate;
+	}
+
 };
 
 USTRUCT(BlueprintType)

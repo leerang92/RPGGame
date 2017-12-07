@@ -1,14 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FrostGigant.h"
-#include "RPGGameCharacter.h"
+#include "RPGCharacter.h"
 
 
 void AFrostGigant::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bAttack = false;
 	bAttacking = false;
 }
 
@@ -22,7 +21,7 @@ void AFrostGigant::Tick(float DeltaTime)
 		{
 			SetFocus();
 		}
-		else if(IsAttack() && !bAttack)
+		else if(IsAttack())
 		{
 			UE_LOG(LogClass, Warning, TEXT("Check"));
 			ComboAttack();
@@ -36,7 +35,7 @@ void AFrostGigant::OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(OtherActor);
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
 		if (PC)
 		{
 			AIState = EAIState::AGRO;
@@ -57,7 +56,6 @@ void AFrostGigant::SetAttack()
 
 void AFrostGigant::ComboAttack()
 {
-	bAttack = true;
 	if (AttackIndex >= AttackAnims.Num())
 	{
 		AttackIndex = 0;

@@ -26,23 +26,13 @@ public:
 	// Inventory 활성화 함수
 	void ActiveInventory();
 
-	FORCEINLINE UUIInventory* GetInventory() const { return InventoryUI; }
-
 	// Skill 창 활성화
 	void ActiveSkillUI();
 
-	FORCEINLINE UUISkill* GetSkillUI() const { return SkillUI; }
-
 	void ActiveGetUI(bool bActive);
 
-	FORCEINLINE UUIBuffBar* GetBuffBar() const { return BuffBar; }
-
-	FORCEINLINE UUISkillBar* GetSkillBar() const { return SkillBar; }
-
-	FORCEINLINE UUIPlayerState* GetPlayerState() const { return PlayerStateUI; }
-
 protected:
-	// Inventory Class
+	/* UI 클래스 변수들 */
 	UPROPERTY()
 	class UUIInventory* InventoryUI;
 
@@ -61,15 +51,28 @@ protected:
 	UPROPERTY()
 	class UUIPlayerState* PlayerStateUI;
 
+public:
+	/* UI Class 반환 */
+	FORCEINLINE UUIInventory* GetInventory() const { return InventoryUI; }
+
+	FORCEINLINE UUISkill* GetSkillUI() const { return SkillUI; }
+
+	FORCEINLINE UUIBuffBar* GetBuffBar() const { return BuffBar; }
+
+	FORCEINLINE UUISkillBar* GetSkillBar() const { return SkillBar; }
+
+	FORCEINLINE UUIPlayerState* GetPlayerState() const { return PlayerStateUI; }
+
 private:
-	// Inventory 활성화 여부
+	// Inventory UI 활성화 여부
 	bool bInventory;
 
+	// Skill UI 활성화 여부
 	bool bSkill;
 
-	// 마우스 커서 활성화
+	// 마우스 커서 활성화 함수
 	void ShowMouseCursor(bool bShow);
 
-	// 커서 활성화 여부
+	// 커서 활성화 여부 반환
 	bool IsHiddeCursor() const;
 };

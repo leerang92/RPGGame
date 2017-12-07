@@ -29,7 +29,6 @@ void ABaseMonsterController::UnPossess()
 {
 	Super::UnPossess();
 
-	UE_LOG(LogClass, Warning, TEXT("Die"));
 	BehaviorComp->StopTree();
 }
 

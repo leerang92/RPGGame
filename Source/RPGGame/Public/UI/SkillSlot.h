@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SkillInformation.h"
+#include "ProgressBar.h"
 #include "UI/UIBaseSlot.h"
 #include "SkillSlot.generated.h"
 
@@ -16,10 +17,9 @@ class RPGGAME_API USkillSlot : public UUIBaseSlot
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkillInformation)
-	FSkillInfo SkillInfo;
-	
 	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	virtual void OnUsed() override;
 
@@ -40,7 +40,21 @@ public:
 	// 스킬 사용 가능 여부 반환
 	FORCEINLINE bool IsUseSkill() const { return bUsed; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkillInformation)
+	FSkillInfo SkillInfo;
+
+protected:
+	UPROPERTY()
+	UProgressBar* SlotBar;
+
+	void SetProgressBarStyle(UTexture2D* Image);
+
+	float CurrentPersent;
+
+	bool bIsUseSkill;
+
 private:
+	// 슬롯에 아이콘 드랍 가능 여부
 	bool bDrop;
 
 	// 스킬 사용 가능 여부

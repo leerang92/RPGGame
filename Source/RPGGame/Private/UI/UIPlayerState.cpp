@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UIPlayerState.h"
-#include "RPGGameCharacter.h"
+#include "RPGCharacter.h"
 
 void UUIPlayerState::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(GetOwningPlayerPawn());
+	ARPGCharacter* PC = Cast<ARPGCharacter>(GetOwningPlayerPawn());
 	if (PC)
 	{
 		MaxHP = PC->GetMaxHP();

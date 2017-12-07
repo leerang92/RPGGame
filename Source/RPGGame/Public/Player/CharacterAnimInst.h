@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RPGGameCharacter.h"
+#include "RPGCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "CharacterAnimInst.generated.h"
 
@@ -24,7 +24,13 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_StopAttack(UAnimNotify* Notify);
+
+	UFUNCTION()
+	void AnimNotify_CamShake(UAnimNotify* Notify);
+
+	UFUNCTION()
+	void AnimNotify_SlowMotion(UAnimNotify* Notify);
 	
 protected:
-	class ARPGGameCharacter* PC;
+	class ARPGCharacter* PC;
 };

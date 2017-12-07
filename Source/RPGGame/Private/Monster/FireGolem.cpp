@@ -18,7 +18,7 @@ void AFireGolem::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp)
 	{
-		ARPGGameCharacter* PC = Cast<ARPGGameCharacter>(OtherActor);
+		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
 		if (PC)
 		{
 			MonsterCon->SetTargetPawn(PC);

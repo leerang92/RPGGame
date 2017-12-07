@@ -15,6 +15,7 @@ class RPGGAME_API AConsumableItem : public ABaseItem
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
 
 	virtual void OnPickup(APawn* Owner) override;
 	

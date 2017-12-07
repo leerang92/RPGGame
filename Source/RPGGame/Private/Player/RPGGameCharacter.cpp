@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "SkillInformation.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ARPGGameCharacter
@@ -250,6 +251,12 @@ void ARPGGameCharacter::ComboAttack()
 		AttackIndex = 0;
 	}
 	SetAnimation(AttackAnims[AttackIndex]);
+}
+
+void ARPGGameCharacter::SetSkill(FSkillInfo Info)
+{
+	UE_LOG(LogClass, Warning, TEXT("Skill"));
+	SetAnimation(Info.SkillAnim);
 }
 
 ABaseItem * ARPGGameCharacter::GetPickupItem() const

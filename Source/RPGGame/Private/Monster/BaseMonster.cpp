@@ -11,6 +11,7 @@ ABaseMonster::ABaseMonster()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bAttacking = false;
+	bIsSetAttack = false;
 
 	MaxHP = 100.0f;
 	HP = MaxHP;
@@ -22,6 +23,11 @@ ABaseMonster::ABaseMonster()
 	SetOrientation = 100.0f;
 	Angular = 0.0f;
 	UpdateRotation = 0.0;
+
+	AttackColl = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Attack Collider"));
+	AttackColl->AttachTo(GetCapsuleComponent());
+	AttackColl->OnComponentBeginOverlap.AddDynamic(this, &ABaseMonster::OnAttackOverlapBegin);
+	AttackColl->OnComponentEndOverlap.AddDynamic(this, &ABaseMonster::OnAttackOverlapEnd);
 
 	AgroColl = CreateDefaultSubobject<USphereComponent>(TEXT("Agro Collsion Component"));
 	AgroColl->AttachTo(GetCapsuleComponent());
@@ -53,15 +59,18 @@ void ABaseMonster::Tick(float DeltaTime)
 
 float ABaseMonster::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
-	//float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	HP -= Damage;
-	HP = FMath::Max(HP, 0.0f);
-
-	CreateDamageWidget(Damage);
-
-	if (HP <= 0.0f)
+	if (IsAlive())
 	{
-		OnDeath();
+		//float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+		HP -= Damage;
+		HP = FMath::Max(HP, 0.0f);
+
+		CreateDamageWidget(Damage);
+
+		if (HP <= 0.0f)
+		{
+			OnDeath();
+		}
 	}
 	return Damage;
 }
@@ -80,6 +89,34 @@ void ABaseMonster::CreateDamageWidget(float Damage)
 	}
 }
 
+void ABaseMonster::ItemDrop()
+{
+	const FVector ActorLoc = GetActorLocation();
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	SpawnInfo.Instigator = Instigator;
+
+	for (int i = 0; i < DropItemArr.Num(); ++i)
+	{
+		ABaseItem* Item = Cast<ABaseItem>(DropItemArr[i]->ClassDefaultObject);
+		if (Item)
+		{
+			if (Item->Info.IsDropItem())
+			{
+				/* 액터 기준으로 X, Y의 랜덤한 위치에 스폰 */
+				const float rX = FMath::RandRange(-200.0f, 200.0f);
+				const float rY = FMath::RandRange(-200.0f, 200.0f);
+				const FVector SpawnLoc = ActorLoc + FVector(rX, rY, 0.0f);
+				
+				GetWorld()->SpawnActor<AActor>(DropItemArr[i], SpawnLoc, FRotator::ZeroRotator, SpawnInfo);
+			}
+		}
+	}
+
+	
+}
+
 
 void ABaseMonster::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
@@ -90,36 +127,42 @@ void ABaseMonster::OnMeleeOverlapBegin(UPrimitiveComponent * OverlappedComp, AAc
 {
 }
 
+void ABaseMonster::OnAttackOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+}
+
 bool ABaseMonster::IsAttack()
 {
-	//float Dir = GetDotProductTo(Character);
+	return bIsSetAttack;
+
 	// 캐릭터와의 각도를 구함 (0 ~ 1 사이)
-	const FVector ForwardVec = GetActorForwardVector();
+	/*const FVector ForwardVec = GetActorForwardVector();
 	FVector TargetOffset = TargetPawn->GetActorLocation() - GetActorLocation();
 	TargetOffset = TargetOffset.GetSafeNormal();
 	float Angle = FVector::DotProduct(ForwardVec, TargetOffset);
 	float Dist = FVector::Distance(GetActorLocation(), TargetPawn->GetActorLocation());
 
-	if (Angle >= 0.85f && Dist <= AttackDistance) 
+	if (Angle >= 0.91f && Dist <= AttackDistance) 
 	{ 
 		return true; 
 	}
 
-	return false;
+	return false;*/
 }
 
 void ABaseMonster::ComboAttack()
 {
-	if (IsAlive())
+	bAttacking = true;
+	if (AttackIndex >= AttackAnims.Num())
 	{
-		bAttack = true;
-		if (AttackIndex >= AttackAnims.Num())
-		{
-			AttackIndex = 0;
-		}
-		PlayAnimation(AttackAnims[AttackIndex]);
-		++AttackIndex;
+		AttackIndex = 0;
 	}
+	PlayAnimation(AttackAnims[AttackIndex]);
+	++AttackIndex;
+}
+
+void ABaseMonster::OnAttackOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
+{
 }
 
 float ABaseMonster::PlayAnimation(UAnimMontage * Animation, float InPlayRate, FName StartSelectName)
@@ -129,10 +172,18 @@ float ABaseMonster::PlayAnimation(UAnimMontage * Animation, float InPlayRate, FN
 
 void ABaseMonster::OnDeath()
 {
+	// 애니메이션 중지
+	StopAnimMontage(AttackAnims[0]);
+
 	// Controller 해제
 	DetachFromControllerPendingDestroy();
 
+	/* Collider 무시 */
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	// 아이템 드랍
+	ItemDrop();
 }
 
 void ABaseMonster::SetFocus()

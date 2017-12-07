@@ -109,6 +109,7 @@ public:
 
 	bool bInputAttack;
 
+	void SetSkill(FSkillInfo Info);
 private:
 	/* UI */
 	UPROPERTY()
