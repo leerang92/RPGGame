@@ -22,6 +22,9 @@ public:
 	virtual void OnUsed(APawn* Owner) override;
 
 protected:
+	UPROPERTY(EditAnywhere, Category = Potion, meta = (AllowPrivateAccess = "true"))
+	FPotionInfo PotionInfo;
+
 	UPROPERTY(EditAnywhere, Category = Buff, meta = (AllowPrivateAccess = "true"))
 	FBuffInfo BuffInfo;
 };

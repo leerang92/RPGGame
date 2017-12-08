@@ -26,9 +26,6 @@ void UUIInventorySlot::OnUsed()
 		ABaseItem* UsableItem = Cast<ABaseItem>(ItemInfo.ItemClass->GetDefaultObject());
 		if (UsableItem)
 		{
-			// 아이템 사용
-			UsableItem->OnUsed(GetOwningPlayerPawn());
-
 			// 사용한 아이템 수량 감소 및 0 이하일 때 삭제
 			--ItemInfo.Amount;
 			if (ItemInfo.Amount <= 0)
@@ -36,6 +33,9 @@ void UUIInventorySlot::OnUsed()
 				ItemInfo = {};
 				SetSlotStyle(*SlotImage, nullptr);
 			}
+
+			// 아이템 사용
+			UsableItem->OnUsed(GetOwningPlayerPawn());
 			SetAmountText(ItemInfo.Amount);
 		}
 	}

@@ -273,10 +273,13 @@ void ARPGCharacter::AddItem(ABaseItem * Item)
 {
 	if (Item != nullptr)
 	{
+		// 무기 아이템이고 현재 무기를 가지고 있지 않다면 무기 장착
 		if (CurrentWeapon == nullptr && Item->Info.Type == EItemType::WEAPON)
 		{
+			Item->OnUsed(this);
 			CurrentWeapon = Item;
-			CurrentWeapon->OnUsed(this);
+			/*CurrentWeapon = Item;
+			CurrentWeapon->OnUsed(this);*/
 		}
 		else
 		{
@@ -299,6 +302,27 @@ void ARPGCharacter::SetHP(float NewHP)
 	{
 		OnDeath();
 	}
+}
+
+void ARPGCharacter::SwapWeapon(TSubclassOf<ABaseItem> Item)
+{
+	if (Item == nullptr)
+		return;
+
+	// 이전 무기 아이템
+	ABaseItem* PrevItem = CurrentWeapon;
+	CurrentWeapon = nullptr;
+
+	// 새 아이템 생성 후 장착
+	ABaseItem* NewItem = GetWorld()->SpawnActor<ABaseItem>(Item, FVector::ZeroVector, FRotator::ZeroRotator);
+	check(NewItem);
+	NewItem->OnUsed(this);
+	CurrentWeapon = NewItem;
+
+	// 이전 무기 아이템 인벤토리에 설정 후 액터 제거
+	ItemArr.Add(PrevItem);
+	MainHUD->GetInventory()->AddItem(PrevItem->Info);
+	PrevItem->SetLifeSpan(0.001f);
 }
 
 void ARPGCharacter::ActiveInventory()

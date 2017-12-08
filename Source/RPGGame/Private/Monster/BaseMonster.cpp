@@ -12,6 +12,7 @@ ABaseMonster::ABaseMonster()
 
 	bAttacking = false;
 	bIsSetAttack = false;
+	bIsCritical = false;
 
 	MaxHP = 100.0f;
 	HP = MaxHP;
@@ -84,7 +85,7 @@ void ABaseMonster::CreateDamageWidget(float Damage)
 		UUIDamage* DamageUI = Cast<UUIDamage>(DamageWidget);
 		if (DamageUI)
 		{
-			DamageUI->SetDamage(Damage, GetActorLocation());
+			DamageUI->SetDamage(Damage, GetActorLocation(), bIsCritical);
 		}
 	}
 }

@@ -17,7 +17,4 @@ class RPGGAME_API AHealthPotion : public AConsumableItem
 public:
 
 	virtual void OnUsed(APawn* Owner) override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
-	float HP;
 };

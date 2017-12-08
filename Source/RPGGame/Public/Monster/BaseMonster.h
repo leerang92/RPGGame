@@ -52,6 +52,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = UI)
 	TSubclassOf<UUserWidget> DamageWidgetClass;
 
+	bool bIsCritical;
+
 protected:
 	float HP;
 

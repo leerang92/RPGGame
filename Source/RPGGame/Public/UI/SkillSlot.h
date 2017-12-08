@@ -38,7 +38,7 @@ public:
 	void SetDrop(bool isDrop);
 
 	// 스킬 사용 가능 여부 반환
-	FORCEINLINE bool IsUseSkill() const { return bUsed; }
+	FORCEINLINE bool IsUseSkill() const { return bUsed && SkillInfo.Image != nullptr; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkillInformation)
 	FSkillInfo SkillInfo;

@@ -10,6 +10,6 @@ void AHealthPotion::OnUsed(APawn * Owner)
 
 	ARPGCharacter* PC = Cast<ARPGCharacter>(Owner);
 
-	PC->SetHP(HP);
+	PC->SetHP(PotionInfo.EffectValue);
 }
 

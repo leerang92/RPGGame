@@ -43,9 +43,6 @@ struct FItemInfo
 	UPROPERTY(EditAnywhere, Category = Item)
 	TSubclassOf<class ABaseItem> ItemClass;
 
-private:
-	float MaximumDropRate = 100.0f;
-
 public:
 	FItemInfo() :
 		Name(TEXT("No Name")),
@@ -58,12 +55,80 @@ public:
 
 	bool IsDropItem()
 	{
-		float Rate = FMath::Fmod(FMath::FRand(), MaximumDropRate) * 100.0f;
-		UE_LOG(LogClass, Warning, TEXT("%f"), Rate);
+		float Rate = FMath::Fmod(FMath::FRand(), 100.0f) * 100.0f;
 		return DropRate > Rate;
-		//Rate %= MaximumDropRate;
+	}
+};
+
+USTRUCT()
+struct FWeaponInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float MaxDamage;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float MinDamage;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float CriticalRate;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float CriticalDamageRate;
+
+public:
+	FWeaponInfo() :
+		MaxDamage(0),
+		MinDamage(0),
+		CriticalRate(1)
+	{}
+
+	float GetDamage()
+	{
+		float Rate = FMath::Fmod(FMath::FRand(), 100.0f) * 100.0f;
+		if (CriticalRate > Rate)
+		{
+			bIsCritical = true;
+			return GetDamageRange() * CriticalDamageRate;
+		}
+		else
+		{
+			bIsCritical = false;
+			return GetDamageRange();
+		}
 	}
 
+	bool IsCritical() const
+	{
+		return bIsCritical;
+	}
+
+private:
+	bool bIsCritical = false;
+
+	float GetDamageRange()
+	{
+		return FMath::RandRange(MinDamage, MaxDamage);
+	}
+};
+
+USTRUCT()
+struct FPotionInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, Category = Potion)
+	float EffectValue;
+
+	UPROPERTY(EditAnywhere, Category = Potion)
+	float Duration;
+
+public:
+	FPotionInfo() :
+		EffectValue(0),
+		Duration(0)
+	{}
 };
 
 USTRUCT(BlueprintType)

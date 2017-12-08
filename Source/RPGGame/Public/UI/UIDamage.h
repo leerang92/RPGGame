@@ -17,7 +17,7 @@ class RPGGAME_API UUIDamage : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetDamage(float NewDamage, FVector TargetVector);
+	void SetDamage(float NewDamage, FVector TargetVector, bool bCrit = false);
 
 	UPROPERTY(EditAnywhere, Category = Remove)
 	float RemoveTime;
@@ -31,12 +31,12 @@ public:
 private:
 	FTimerHandle RemoveTimer;
 
-	void SetText(float Damage);
+	void SetText(float Damage, bool bCrit = false);
 
 	// Remove Widget
 	UFUNCTION()
 	void OnRemove();
 
-	// float 변수를 소수점이 없는 Text로 변환하여 반환
+	// float 변수를 소수점이 없는 Text로 변환
 	FText GetFloatAsText(float Number);
 };

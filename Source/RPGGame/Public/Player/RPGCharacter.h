@@ -91,9 +91,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attack)
 	bool IsAttacking() const;
 
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	FORCEINLINE bool IsWeapon() const { return CurrentWeapon != nullptr; }
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
 	TArray<UAnimMontage*> AttackAnims;
 
@@ -104,6 +101,12 @@ public:
 	bool bIsAttacking;
 
 	void SetSkill(FSkillInfo Info);
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	FORCEINLINE bool IsWeapon() const { return CurrentWeapon != nullptr; }
+
+	void SwapWeapon(TSubclassOf<ABaseItem> Item);
+
 private:
 	/* UI */
 	UPROPERTY()
@@ -137,13 +140,13 @@ private:
 private:
 	/* Item */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = View, meta = (AllowPrivateAccess = "true"))
-		float ViewDistance;
-
-	// 현재 장착한 무기 클래스
-	class ABaseItem* CurrentWeapon;
+	float ViewDistance;
 
 	// 아이템 줍기 가능 여부
 	bool bPickupItem;
+
+	// 현재 장착한 무기 클래스
+	class ABaseItem* CurrentWeapon;
 
 	// 현재 보고 있는 아이템 클래스
 	UPROPERTY()

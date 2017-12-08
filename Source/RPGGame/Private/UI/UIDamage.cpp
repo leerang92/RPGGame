@@ -5,9 +5,8 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
-void UUIDamage::SetDamage(float NewDamage, FVector TargetVector)
+void UUIDamage::SetDamage(float NewDamage, FVector TargetVector, bool bCrit)
 {
-	UE_LOG(LogClass, Warning, TEXT("!!!"));
 	APlayerController* Con = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (Con)
 	{
@@ -23,7 +22,7 @@ void UUIDamage::SetDamage(float NewDamage, FVector TargetVector)
 		ScreenVector += FVector2D(rX, rY);
 		SetPositionInViewport(ScreenVector);
 
-		SetText(NewDamage);
+		SetText(NewDamage, bCrit);
 		PlayAnimation(TextAnim);
 
 		// RemoveTime 이후에 위젯 삭제
@@ -35,8 +34,17 @@ void UUIDamage::SetDamage(float NewDamage, FVector TargetVector)
 	}
 }
 
-void UUIDamage::SetText(float Damage)
+void UUIDamage::SetText(float Damage, bool bCrit)
 {
+	if(!bCrit)
+		DamageText->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f));
+	else
+	{
+		DamageText->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f));
+		FSlateFontInfo FontInfo = DamageText->Font;
+		FontInfo.Size *= 1.5f;
+		DamageText->SetFont(FontInfo);
+	}
 	DamageText->SetText(GetFloatAsText(Damage));
 }
 
@@ -48,7 +56,7 @@ void UUIDamage::OnRemove()
 FText UUIDamage::GetFloatAsText(float Number)
 {
 	float Rounded = roundf(Number);
-	if (FMath::Abs(Number - Rounded) < FMath::Pow(10, -1 * 0))
+	if (FMath::Abs(Number - Rounded) < FMath::Pow(10, 0))
 	{
 		Number = Rounded;
 	}
