@@ -10,6 +10,7 @@ ABaseMonsterController::ABaseMonsterController()
 
 	TargetPawnKeyName = TEXT("TargetPawn");
 	AIStateKeyName = TEXT("State");
+	MoveLocationKeyName = TEXT("MoveLocation");
 }
 
 void ABaseMonsterController::Possess(APawn * InPawn)
@@ -40,10 +41,28 @@ void ABaseMonsterController::SetTargetPawn(APawn * NewTarget)
 	}
 }
 
+void ABaseMonsterController::SetMoveLocation(FVector Location)
+{
+	if (BlackboardComp)
+	{
+		BlackboardComp->SetValueAsVector(MoveLocationKeyName, Location);
+	}
+}
+
 void ABaseMonsterController::SetAIState(EAIState State)
 {
 	if (BlackboardComp)
 	{
 		BlackboardComp->SetValueAsEnum(AIStateKeyName, State);
 	}
+}
+
+APawn * ABaseMonsterController::GetTargetPawn() const
+{
+	return Cast<APawn>(BlackboardComp->GetValueAsObject(TargetPawnKeyName));
+}
+
+uint8 ABaseMonsterController::GetAiState() const
+{
+	return BlackboardComp->GetValueAsEnum(AIStateKeyName);
 }

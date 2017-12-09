@@ -9,6 +9,7 @@ UENUM(BlueprintType)
 enum EAIState
 {
 	IDLE,
+	WANDER,
 	MOVE,
 	AGRO,
 	ATTACK,

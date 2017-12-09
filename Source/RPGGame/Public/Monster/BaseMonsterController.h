@@ -27,7 +27,13 @@ public:
 
 	void SetTargetPawn(APawn* NewTarget);
 
+	void SetMoveLocation(FVector Location);
+
 	void SetAIState(EAIState State);
+
+	APawn* GetTargetPawn() const;
+
+	uint8 GetAiState() const;
 
 	UPROPERTY(EditAnywhere, Category = Behavior)
 	UBehaviorTreeComponent* BehaviorComp;
@@ -40,5 +46,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = AI)
 	FName AIStateKeyName;
+
+	UPROPERTY(EditAnywhere, Category = AI)
+	FName MoveLocationKeyName;
+
+	FVector HomeLocation;
 	
 };

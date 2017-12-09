@@ -33,7 +33,7 @@ void AMasterGrunt::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsTarget() && IsAlive())
+	if (MonsterCon->GetTargetPawn() && IsAlive())
 	{
 		// 공격 중이 아니며 공격 가능일 때 공격 시작
 		if (IsAttack() && !bAttacking)
@@ -46,23 +46,14 @@ void AMasterGrunt::Tick(float DeltaTime)
 		else if (!IsAttack() && !bAttacking)
 		{
 			MonsterCon->SetAIState(EAIState::MOVE);
-			MonsterCon->SetFocus(TargetPawn);
+			MonsterCon->SetFocus(MonsterCon->GetTargetPawn());
 			//SetFocus();
 		}
 	}
-}
-
-void AMasterGrunt::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
+	else if (MonsterCon->GetAiState() == EAIState::IDLE)
 	{
-		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
-		if (PC)
-		{
-			TargetPawn = PC;
-			MonsterCon->SetTargetPawn(TargetPawn);
-			MonsterCon->SetAIState(EAIState::MOVE);
-		}
+		MonsterCon->SetAIState(EAIState::WANDER);
+		SetRandomLocation();
 	}
 }
 

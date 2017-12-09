@@ -30,6 +30,9 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_SlowMotion(UAnimNotify* Notify);
+
+	UFUNCTION()
+	void AnimNotify_MakeNoise(UAnimNotify* Notify);
 	
 protected:
 	class ARPGCharacter* PC;

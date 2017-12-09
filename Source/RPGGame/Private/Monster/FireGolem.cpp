@@ -14,21 +14,6 @@ AFireGolem::AFireGolem()
 	WeaponMesh->SetSkeletalMesh(SK_Weapon.Object);
 }
 
-void AFireGolem::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp)
-	{
-		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
-		if (PC)
-		{
-			MonsterCon->SetTargetPawn(PC);
-			AIState = EAIState::AGRO;
-			MonsterCon->SetAIState(AIState);
-			GetWorldTimerManager().SetTimer(WaitTimer, this, &AFireGolem::StopAgro, 2.333f);
-		}
-	}
-}
-
 void AFireGolem::OnMeleeOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 }

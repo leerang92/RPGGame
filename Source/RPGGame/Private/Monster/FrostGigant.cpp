@@ -29,22 +29,6 @@ void AFrostGigant::Tick(float DeltaTime)
 	}
 }
 
-void AFrostGigant::OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	Super::OnAgroOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
-	{
-		ARPGCharacter* PC = Cast<ARPGCharacter>(OtherActor);
-		if (PC)
-		{
-			AIState = EAIState::AGRO;
-			//MonsterCon->SetTargetPawn(PC);
-			GetWorldTimerManager().SetTimer(WaitTimer, this, &AFrostGigant::SetAttack, 2.876f, false);
-		}
-	}
-}
-
 void AFrostGigant::SetAttack()
 {
 	AIState = EAIState::ATTACK;

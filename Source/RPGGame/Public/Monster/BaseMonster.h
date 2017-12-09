@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
+#include "Runtime/AIModule/Classes/Perception/PawnSensingComponent.h"
 #include "Types.h"
 #include "RPGCharacter.h"
 #include "UserWidget.h"
@@ -26,9 +27,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual float TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser);
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Collision)
-	class USphereComponent* AgroColl;
 
 	UPROPERTY(EditAnywhere, Category = Behavior)
 	UBehaviorTree* BehaviorTree;
@@ -54,14 +52,15 @@ public:
 
 	bool bIsCritical;
 
+	/* Pawn Sensing */
+	UPROPERTY(EditAnywhere, Category = AI)
+	UPawnSensingComponent* PawnSensing;
+
 protected:
 	float HP;
 
 	UPROPERTY()
 	class ABaseMonsterController* MonsterCon;
-
-	UPROPERTY()
-	APawn* TargetPawn;
 
 	EAIState AIState;
 
@@ -72,6 +71,18 @@ protected:
 
 	// 받은 데미지 표시 UI 생성
 	void CreateDamageWidget(float Damage);
+
+	UFUNCTION()
+	virtual void OnSeePlayer(APawn* Pawn);
+
+	UFUNCTION()
+	void OnHearingPlayer(APawn* Pawn, const FVector& Location, float Volume);
+
+	float Rate;
+
+	FTimerHandle WanderTimer;
+
+	void SetRandomLocation();
 
 public:
 	/* Attack */
@@ -114,9 +125,6 @@ protected:
 
 protected:
 	/* 충돌 처리 */
-	UFUNCTION()
-	virtual void OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	UFUNCTION()
 	virtual void OnMeleeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

@@ -32,14 +32,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = Collider)
 	UCapsuleComponent* LWeaponColl;
 
-	// 타겟 존재 여부 반환
-	FORCEINLINE bool IsTarget() const { return TargetPawn != nullptr; }
-
 protected:
 	/* 충돌 처리 */
-	UFUNCTION()
-	virtual void OnAgroOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-
 	UFUNCTION()
 	virtual void OnMeleeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 

@@ -25,14 +25,17 @@ ABaseMonster::ABaseMonster()
 	Angular = 0.0f;
 	UpdateRotation = 0.0;
 
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing Comp"));
+	PawnSensing->SetPeripheralVisionAngle(60.0f);
+	PawnSensing->SightRadius = 3000.0f;
+	PawnSensing->HearingThreshold = 10.0f;
+	PawnSensing->OnSeePawn.AddDynamic(this, &ABaseMonster::OnSeePlayer);
+	PawnSensing->OnHearNoise.AddDynamic(this, &ABaseMonster::OnHearingPlayer);
+
 	AttackColl = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Attack Collider"));
 	AttackColl->AttachTo(GetCapsuleComponent());
 	AttackColl->OnComponentBeginOverlap.AddDynamic(this, &ABaseMonster::OnAttackOverlapBegin);
 	AttackColl->OnComponentEndOverlap.AddDynamic(this, &ABaseMonster::OnAttackOverlapEnd);
-
-	AgroColl = CreateDefaultSubobject<USphereComponent>(TEXT("Agro Collsion Component"));
-	AgroColl->AttachTo(GetCapsuleComponent());
-	AgroColl->OnComponentBeginOverlap.AddDynamic(this, &ABaseMonster::OnAgroOverlapBegin);
 
 	AIState = EAIState::IDLE;
 }
@@ -48,6 +51,7 @@ void ABaseMonster::BeginPlay()
 	{
 		MonsterCon = Cast<ABaseMonsterController>(GetController());
 		check(MonsterCon);
+		MonsterCon->HomeLocation = GetActorLocation();
 		MonsterCon->SetAIState(AIState);
 	}
 }
@@ -90,6 +94,41 @@ void ABaseMonster::CreateDamageWidget(float Damage)
 	}
 }
 
+void ABaseMonster::OnSeePlayer(APawn* Pawn)
+{
+	ARPGCharacter* PC = Cast<ARPGCharacter>(Pawn);
+	if (PC && !IsAttack() && !bAttacking)
+	{
+		MonsterCon->SetAIState(EAIState::MOVE);
+		MonsterCon->SetTargetPawn(Pawn);
+	}
+}
+
+void ABaseMonster::OnHearingPlayer(APawn* Pawn, const FVector& Location, float Volume)
+{
+	UE_LOG(LogClass, Warning, TEXT("Hearing"));
+	ARPGCharacter* PC = Cast<ARPGCharacter>(Pawn);
+	if (PC && !IsAttack() && !bAttacking)
+	{
+		MonsterCon->SetAIState(EAIState::MOVE);
+		MonsterCon->SetTargetPawn(Pawn);
+	}
+}
+
+void ABaseMonster::SetRandomLocation()
+{
+	GetWorldTimerManager().ClearTimer(WanderTimer);
+
+	float RandX = FMath::RandRange(-1000.0f, 1000.0f);
+	float RandY = FMath::RandRange(-1000.0f, 1000.0f);
+
+	FVector MoveLocation = MonsterCon->HomeLocation + FVector(RandX, RandY, 0);
+
+	MonsterCon->SetMoveLocation(MoveLocation);
+
+	GetWorldTimerManager().SetTimer(WanderTimer, this, &ABaseMonster::SetRandomLocation, 3.0f, true);
+}
+
 void ABaseMonster::ItemDrop()
 {
 	const FVector ActorLoc = GetActorLocation();
@@ -115,12 +154,6 @@ void ABaseMonster::ItemDrop()
 		}
 	}
 
-	
-}
-
-
-void ABaseMonster::OnAgroOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
 	
 }
 
@@ -189,12 +222,12 @@ void ABaseMonster::OnDeath()
 
 void ABaseMonster::SetFocus()
 {
-	if (TargetPawn == nullptr)
+	if (MonsterCon->GetTargetPawn() == nullptr)
 		return;
 
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 
-	FVector Direction = TargetPawn->GetActorLocation() - GetActorLocation();
+	FVector Direction = MonsterCon->GetTargetPawn()->GetActorLocation() - GetActorLocation();
 	float Orientation = FMath::RadiansToDegrees(FMath::Atan2(Direction.Y, Direction.X));
 	
 	float Rotation = Orientation - SetOrientation;

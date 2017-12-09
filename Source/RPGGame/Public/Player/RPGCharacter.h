@@ -6,6 +6,7 @@
 #include "UserWidget.h"
 #include "MainHUD.h"
 #include "BaseItem.h"
+#include "WeaponItem.h"
 #include "GameFramework/Character.h"
 #include "RPGCharacter.generated.h"
 
@@ -146,7 +147,7 @@ private:
 	bool bPickupItem;
 
 	// 현재 장착한 무기 클래스
-	class ABaseItem* CurrentWeapon;
+	class AWeaponItem* CurrentWeapon;
 
 	// 현재 보고 있는 아이템 클래스
 	UPROPERTY()

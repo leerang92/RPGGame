@@ -41,6 +41,14 @@ void UCharacterAnimInst::AnimNotify_SlowMotion(UAnimNotify* Notify)
 	}
 }
 
+void UCharacterAnimInst::AnimNotify_MakeNoise(UAnimNotify * Notify)
+{
+	if (PC)
+	{
+		PC->MakeNoise(1.0f, PC, PC->GetActorLocation(), 0.5f);
+	}
+}
+
 
 
 

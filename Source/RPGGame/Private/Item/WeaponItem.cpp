@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WeaponItem.h"
-#include "EffectActor.h"
 #include "RPGCharacter.h"
 #include "BaseMonster.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -43,14 +42,13 @@ void AWeaponItem::OnUsed(APawn * Owner)
 void AWeaponItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
-	{
-		
+	{	
 		ABaseMonster* Monster = Cast<ABaseMonster>(OtherActor);
 		if (Monster)
 		{
 			// 캐릭터가 공격 애니메이션중이면 데미지 전달
 			ARPGCharacter* PC = Cast<ARPGCharacter>(OwnerPawn);
-			if (PC && PC->IsAttacking())
+			if (PC && PC->IsAttacking() && IsTakeDamage(*OtherActor))
 			{
 				/* 데미지 전달 */
 				const float ActualDamage = WeaponInfo.GetDamage();
@@ -59,7 +57,6 @@ void AWeaponItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * 
 				FDamageEvent DamageEvent(ValidDamageTypeClass);
 				OtherActor->TakeDamage(ActualDamage, DamageEvent, nullptr, nullptr);
 				
-
 				/* Effect 생성 */
 				AEffectActor* Effect = GetWorld()->SpawnActorDeferred<AEffectActor>(EffectClass, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
 				if (Effect)
@@ -68,7 +65,19 @@ void AWeaponItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * 
 					UGameplayStatics::FinishSpawningActor(Effect, FTransform(FRotator::ZeroRotator, OtherActor->GetActorLocation()));
 				}
 				PC->StartCameraShake();
+				// 데메지를 준 액터 추가
+				TakeDamageActors.Add(OtherActor);
 			}
 		}
 	}
+}
+
+bool AWeaponItem::IsTakeDamage(AActor& GetActor) const
+{
+	return TakeDamageActors.Find(&GetActor);
+}
+
+void AWeaponItem::SetResetActorArray()
+{
+	TakeDamageActors.Reset(0);
 }
