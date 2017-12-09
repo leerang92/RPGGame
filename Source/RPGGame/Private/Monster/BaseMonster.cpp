@@ -17,14 +17,17 @@ ABaseMonster::ABaseMonster()
 	MaxHP = 100.0f;
 	HP = MaxHP;
 
+	RemoveTime = 60.0f;
+
 	AttackIndex = 0;
-	AttackDistance = 200.0f;
+	//AttackDistance = 200.0f;
 
-	LookSpeed = 200.0f;
-	SetOrientation = 100.0f;
-	Angular = 0.0f;
-	UpdateRotation = 0.0;
+	//LookSpeed = 200.0f;
+	//SetOrientation = 100.0f;
+	//Angular = 0.0f;
+	//UpdateRotation = 0.0;
 
+	/* Pawn Sensing 설정*/
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing Comp"));
 	PawnSensing->SetPeripheralVisionAngle(60.0f);
 	PawnSensing->SightRadius = 3000.0f;
@@ -32,6 +35,7 @@ ABaseMonster::ABaseMonster()
 	PawnSensing->OnSeePawn.AddDynamic(this, &ABaseMonster::OnSeePlayer);
 	PawnSensing->OnHearNoise.AddDynamic(this, &ABaseMonster::OnHearingPlayer);
 
+	/* 공격 가능 여부 콜리더 설정 */
 	AttackColl = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Attack Collider"));
 	AttackColl->AttachTo(GetCapsuleComponent());
 	AttackColl->OnComponentBeginOverlap.AddDynamic(this, &ABaseMonster::OnAttackOverlapBegin);
@@ -47,6 +51,7 @@ void ABaseMonster::BeginPlay()
 
 	HP = MaxHP;
 
+	/* 컨트롤러 정보 설정 */
 	if (GetController())
 	{
 		MonsterCon = Cast<ABaseMonsterController>(GetController());
@@ -66,10 +71,10 @@ float ABaseMonster::TakeDamage(float Damage, FDamageEvent const & DamageEvent, A
 {
 	if (IsAlive())
 	{
-		//float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 		HP -= Damage;
 		HP = FMath::Max(HP, 0.0f);
 
+		// 딜량 표시 UI 생성
 		CreateDamageWidget(Damage);
 
 		if (HP <= 0.0f)
@@ -106,7 +111,6 @@ void ABaseMonster::OnSeePlayer(APawn* Pawn)
 
 void ABaseMonster::OnHearingPlayer(APawn* Pawn, const FVector& Location, float Volume)
 {
-	UE_LOG(LogClass, Warning, TEXT("Hearing"));
 	ARPGCharacter* PC = Cast<ARPGCharacter>(Pawn);
 	if (PC && !IsAttack() && !bAttacking)
 	{
@@ -119,13 +123,14 @@ void ABaseMonster::SetRandomLocation()
 {
 	GetWorldTimerManager().ClearTimer(WanderTimer);
 
+	/* 임의의 지점의 위치를 생성 후 그곳으로 이동하도록 했다 */
 	float RandX = FMath::RandRange(-1000.0f, 1000.0f);
 	float RandY = FMath::RandRange(-1000.0f, 1000.0f);
 
 	FVector MoveLocation = MonsterCon->HomeLocation + FVector(RandX, RandY, 0);
-
 	MonsterCon->SetMoveLocation(MoveLocation);
 
+	// 3초후에 다른 위치 생성
 	GetWorldTimerManager().SetTimer(WanderTimer, this, &ABaseMonster::SetRandomLocation, 3.0f, true);
 }
 
@@ -133,6 +138,7 @@ void ABaseMonster::ItemDrop()
 {
 	const FVector ActorLoc = GetActorLocation();
 
+	/* 액터 생성 정보 */
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Owner = this;
 	SpawnInfo.Instigator = Instigator;
@@ -142,6 +148,7 @@ void ABaseMonster::ItemDrop()
 		ABaseItem* Item = Cast<ABaseItem>(DropItemArr[i]->ClassDefaultObject);
 		if (Item)
 		{
+			// 드랍율에 따른 아이템 드랍 여부
 			if (Item->Info.IsDropItem())
 			{
 				/* 액터 기준으로 X, Y의 랜덤한 위치에 스폰 */
@@ -153,8 +160,6 @@ void ABaseMonster::ItemDrop()
 			}
 		}
 	}
-
-	
 }
 
 void ABaseMonster::OnMeleeOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -218,6 +223,13 @@ void ABaseMonster::OnDeath()
 
 	// 아이템 드랍
 	ItemDrop();
+
+	GetWorldTimerManager().SetTimer(RemoveTimer, this, &ABaseMonster::RemoveActor, RemoveTime);
+}
+
+void ABaseMonster::RemoveActor()
+{
+	SetLifeSpan(0.001f);
 }
 
 void ABaseMonster::SetFocus()

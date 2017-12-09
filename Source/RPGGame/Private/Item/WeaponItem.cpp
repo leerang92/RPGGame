@@ -7,10 +7,12 @@
 
 AWeaponItem::AWeaponItem()
 {
+	/* 무기 콜리더 컴포넌트 설정 */
 	WeaponColl = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Attack Collider Component"));
 	WeaponColl->AttachTo(MeshComp);
 	WeaponColl->OnComponentBeginOverlap.AddDynamic(this, &AWeaponItem::OnOverlapBegin);
 
+	// 부착할 소켓의 이름
 	AttachPoint = TEXT("hand_rWeaponSocket");
 }
 
@@ -26,14 +28,14 @@ void AWeaponItem::OnPickup(APawn * Owner)
 void AWeaponItem::OnUsed(APawn * Owner)
 {
 	ARPGCharacter* PC = Cast<ARPGCharacter>(Owner);
-	if (PC && !PC->IsWeapon())
+	if (PC && !PC->IsWeapon()) // 무기를 소지하고 있지 않을 때
 	{
 		OwnerPawn = Owner;
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		/* 무기를 오른쪽 무기 소켓에 부착 */
 		MeshComp->AttachToComponent(PC->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
 	}
-	else
+	else // 이미 무기를 소지하고 있을 때
 	{
 		PC->SwapWeapon(Info.ItemClass);
 	}
@@ -43,6 +45,7 @@ void AWeaponItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * 
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{	
+		// 몬스터에게만 데미지 전달
 		ABaseMonster* Monster = Cast<ABaseMonster>(OtherActor);
 		if (Monster)
 		{
@@ -64,8 +67,11 @@ void AWeaponItem::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * 
 					Effect->Type = EEffectType::BLOOD;
 					UGameplayStatics::FinishSpawningActor(Effect, FTransform(FRotator::ZeroRotator, OtherActor->GetActorLocation()));
 				}
+				// 카메라 흔들기
 				PC->StartCameraShake();
-				// 데메지를 준 액터 추가
+				// 사운드 재생
+				PlaySound(WeaponInfo.Sound);
+				// 데미지를 준 액터 추가
 				TakeDamageActors.Add(OtherActor);
 			}
 		}
@@ -80,4 +86,12 @@ bool AWeaponItem::IsTakeDamage(AActor& GetActor) const
 void AWeaponItem::SetResetActorArray()
 {
 	TakeDamageActors.Reset(0);
+}
+
+void AWeaponItem::PlaySound(USoundCue * Sound)
+{
+	if (Sound)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Sound, GetActorLocation(), FRotator::ZeroRotator);
+	}
 }

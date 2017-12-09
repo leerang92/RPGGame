@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "GameFramework/Actor.h"
 #include "ItemInformation.generated.h"
 
@@ -17,6 +18,7 @@ enum EItemType
 	SUPPLIES,
 };
 
+// 아이템 정보(무기, 소모템 공용)
 USTRUCT(BlueprintType)
 struct FItemInfo
 {
@@ -52,7 +54,7 @@ public:
 		Type(EItemType::NONE),
 		ItemClass(nullptr)
 	{}
-
+	// 아이템 드랍 여부
 	bool IsDropItem()
 	{
 		float Rate = FMath::Fmod(FMath::FRand(), 100.0f) * 100.0f;
@@ -60,6 +62,7 @@ public:
 	}
 };
 
+// 무기 아이템 정보
 USTRUCT()
 struct FWeaponInfo
 {
@@ -77,13 +80,18 @@ struct FWeaponInfo
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float CriticalDamageRate;
 
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	USoundCue* Sound;
+
 public:
 	FWeaponInfo() :
 		MaxDamage(0),
 		MinDamage(0),
-		CriticalRate(1)
+		CriticalRate(1),
+		Sound(nullptr)
 	{}
 
+	// 크리티컬 데미지를 산정하여 데미지 추출
 	float GetDamage()
 	{
 		float Rate = FMath::Fmod(FMath::FRand(), 100.0f) * 100.0f;
@@ -113,6 +121,7 @@ private:
 	}
 };
 
+// 포션 정보
 USTRUCT()
 struct FPotionInfo
 {
@@ -131,6 +140,7 @@ public:
 	{}
 };
 
+// 버프 정보
 USTRUCT(BlueprintType)
 struct FBuffInfo
 {

@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Slot)
 	FORCEINLINE UTexture2D* GetSlotImage() const { return SkillInfo.Image; }
 	
-	// Slot Drop 가능 여부 반환
+	// 드래그하여 Slot Drop 가능 여부 반환
 	UFUNCTION(BlueprintCallable, Category = Slot)
 	FORCEINLINE bool IsDrop() const { return bDrop; }
 

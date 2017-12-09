@@ -19,8 +19,10 @@ public:
 	
 	virtual void PostInitializeComponents() override;
 
+	// 파티클 타입 얻기
 	UParticleSystem* GetParticle(EEffectType Type) const;
 
+	// 파티클 타입 정보
 	EEffectType Type;
 
 	UPROPERTY(EditDefaultsOnly, Category = Effect)

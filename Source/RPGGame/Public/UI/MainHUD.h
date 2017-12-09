@@ -23,10 +23,9 @@ public:
 	
 	virtual void NativeConstruct() override;
 
-	// Inventory 활성화 함수
+	/* UI 활성화 및 비활성화 */
 	void ActiveInventory();
 
-	// Skill 창 활성화
 	void ActiveSkillUI();
 
 	void ActiveGetUI(bool bActive);

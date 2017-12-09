@@ -18,7 +18,7 @@ class RPGGAME_API ARPGCharacter : public ACharacter
 public:
 	ARPGCharacter();
 
-	/* Camera */
+	/* 카메라 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
@@ -40,6 +40,7 @@ public:
 
 	void StartCameraShake();
 
+	/* 슬로우 모션 */
 	UPROPERTY(EditAnywhere, Category = Camera)
 	float SlowTime;
 
@@ -48,7 +49,7 @@ public:
 	void StopSlowMotion();
 
 protected:
-	/* Movement */
+	/* 이동 함수들 */
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSecondes) override;
@@ -61,9 +62,11 @@ protected:
 
 	void LookUpAtRate(float Rate);
 
+	/* 키 입력 */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	// 메인 UI 클래스
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI)
 	TSubclassOf<class UUserWidget> MainHUDClass;
 
@@ -86,26 +89,35 @@ public:
 	/* 공격 */
 	virtual float TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser);
 
+	// 공격 여부 반환
 	UFUNCTION(BlueprintCallable, Category = Attack)
 	bool IsAttack() const;
 
+	// 현재 공격중인지 여부
 	UFUNCTION(BlueprintCallable, Category = Attack)
 	bool IsAttacking() const;
 
+	// 공격 애니메이션 몽타주 배열
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
 	TArray<UAnimMontage*> AttackAnims;
 
+	// 연속 공격
 	void ComboAttack();
 
+	// 공격 키 입력 여부
 	bool bInputAttack;
 
+	// 현재 공격중인지 여부
 	bool bIsAttacking;
 
+	// 스킬 사용
 	void SetSkill(FSkillInfo Info);
 
+	// 무기를 가지고 있는지 여부
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	FORCEINLINE bool IsWeapon() const { return CurrentWeapon != nullptr; }
 
+	// 무기 교체
 	void SwapWeapon(TSubclassOf<ABaseItem> Item);
 
 private:
@@ -126,16 +138,17 @@ private:
 
 	void StopAttack();
 
-	/* Character State */
+	/* 체력 */
 	float HP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
 	float MaxHP;
 
-	/* Skill */
+	// 키 입력에 따른 스킬 호출
 	template<int Key>
 	void UseSkill();
 
+	/* 사망 */
 	void OnDeath();
 
 private:

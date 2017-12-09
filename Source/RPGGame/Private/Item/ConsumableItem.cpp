@@ -28,5 +28,6 @@ void AConsumableItem::OnUsed(APawn * Owner)
 	ARPGCharacter* PC = Cast<ARPGCharacter>(Owner);
 	check(PC);
 
+	// 버프 아이콘 생성
 	PC->GetMainHUD()->GetBuffBar()->SetBuffIcon(BuffInfo);
 }

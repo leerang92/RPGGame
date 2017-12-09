@@ -15,6 +15,5 @@ class RPGGAME_API AHealthPotion : public AConsumableItem
 	GENERATED_BODY()
 	
 public:
-
 	virtual void OnUsed(APawn* Owner) override;
 };

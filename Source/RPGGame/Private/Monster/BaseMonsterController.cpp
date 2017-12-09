@@ -8,6 +8,7 @@ ABaseMonsterController::ABaseMonsterController()
 	BehaviorComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior Tree Component"));
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Black Board Component"));
 
+	/* 블랙보드 변수 이름 */
 	TargetPawnKeyName = TEXT("TargetPawn");
 	AIStateKeyName = TEXT("State");
 	MoveLocationKeyName = TEXT("MoveLocation");
@@ -17,6 +18,7 @@ void ABaseMonsterController::Possess(APawn * InPawn)
 {
 	Super::Possess(InPawn);
 
+	/* 몬스터의 비헤이비어 트리 설정 */
 	ABaseMonster* Monster = Cast<ABaseMonster>(InPawn);
 	check(Monster);
 	if (Monster->BehaviorTree->BlackboardAsset)

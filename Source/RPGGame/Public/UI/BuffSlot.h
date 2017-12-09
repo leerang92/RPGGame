@@ -35,5 +35,6 @@ public:
 private:
 	FBuffInfo BuffInfo;
 
+	// 버프 슬롯을 추가할 부모 위젯 - UIBuffBar 클래스
 	UUserWidget* ParentWidget;
 };

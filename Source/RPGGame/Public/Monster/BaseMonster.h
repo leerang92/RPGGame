@@ -26,13 +26,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	// 데미지 받는 함수
 	virtual float TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser);
 
 	UPROPERTY(EditAnywhere, Category = Behavior)
 	UBehaviorTree* BehaviorTree;
-
-	UFUNCTION(BlueprintCallable, Category = State)
-	FORCEINLINE EAIState GetAIState() const { return AIState; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
 	float MaxHP;
@@ -47,9 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Health)
 	FORCEINLINE bool IsAlive() const { return HP > 0.0f; }
 
+	/* 딜량 UI */
+	// 딜량 표시 UI 클래스
 	UPROPERTY(EditAnywhere, Category = UI)
 	TSubclassOf<UUserWidget> DamageWidgetClass;
 
+	// 크리티컬 데미지 받은 여부
 	bool bIsCritical;
 
 	/* Pawn Sensing */
@@ -59,6 +60,7 @@ public:
 protected:
 	float HP;
 
+	// 몬스터 컨트롤러
 	UPROPERTY()
 	class ABaseMonsterController* MonsterCon;
 
@@ -78,8 +80,6 @@ protected:
 	UFUNCTION()
 	void OnHearingPlayer(APawn* Pawn, const FVector& Location, float Volume);
 
-	float Rate;
-
 	FTimerHandle WanderTimer;
 
 	void SetRandomLocation();
@@ -92,18 +92,23 @@ public:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TArray<UAnimMontage*> AttackAnims;
 
+	// 연속 공격 함수
 	virtual void ComboAttack();
 
+	// 현재 공격 애니메이션 인덱스
 	UPROPERTY(BlueprintReadOnly, Category = Attack)
 	int AttackIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
 	float AttackDistance;
 
+	// 현재 공격 중인 여부
 	bool bAttacking;
 
+	// 공격 가능 여부
 	bool bIsSetAttack;
 
+	// 공격 가능 여부 반환 함수
 	bool IsAttack();
 
 private:
@@ -121,7 +126,15 @@ protected:
 
 	void ItemDrop();
 
+	/* 사망 */
 	void OnDeath();
+
+	void RemoveActor();
+
+	FTimerHandle RemoveTimer;
+
+	UPROPERTY(EditAnywhere, Category = Death, meta = (AllowPrivateAccess = "ture"))
+	float RemoveTime;
 
 protected:
 	/* 충돌 처리 */

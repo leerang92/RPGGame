@@ -17,13 +17,12 @@ class RPGGAME_API UUIInventorySlot : public UUIBaseSlot
 public:
 	void SetupSlot(FItemInfo Info);
 
+	// ΩΩ∑‘¿« ∫Û ø©∫Œ π›»Ø
 	FORCEINLINE bool IsEmpty() const { return ItemInfo.Image == nullptr; }
 
 	FORCEINLINE FItemInfo GetItemInfo() const { return ItemInfo; }
 
 protected:
-	//virtual void SetSlotStyle(UImage& RefImage, UTexture2D* Image) override;
-
 	virtual void OnUsed() override;
 	
 private:

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "EffectActor.h"
 #include "Item/BaseItem.h"
 #include "WeaponItem.generated.h"
@@ -24,6 +25,7 @@ public:
 
 	virtual void OnUsed(APawn* Owner) override;
 
+	// 무기 콜리더 (무기 충돌 처리를 위한)
 	UPROPERTY(EditAnywhere, Category = Collider)
 	class UCapsuleComponent* WeaponColl;
 
@@ -54,4 +56,6 @@ public:
 	// 오버랩 된 액터 배열 초기화
 	void SetResetActorArray();
 
+	/* 사운드 */
+	void PlaySound(USoundCue * Sound);
 };

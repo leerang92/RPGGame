@@ -14,10 +14,12 @@
 
 ARPGCharacter::ARPGCharacter()
 {
+	/* 공격 */
 	bInputAttack = false;
-	bPickupItem = false;
 	bPlayAttack = false;
 	bIsAttacking = false;
+
+	bPickupItem = false;
 
 	ViewDistance = 500.0f;
 	MaxHP = 100.0f;
@@ -25,17 +27,13 @@ ARPGCharacter::ARPGCharacter()
 
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
+	/* 카메라 */
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
-	GetCharacterMovement()->bOrientRotationToMovement = true;	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -45,6 +43,12 @@ ARPGCharacter::ARPGCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	/* 무브먼트 컴포넌트 */
+	GetCharacterMovement()->bOrientRotationToMovement = true;	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+	GetCharacterMovement()->JumpZVelocity = 600.f;
+	GetCharacterMovement()->AirControl = 0.2f;
 }
 
 void ARPGCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -166,6 +170,7 @@ float ARPGCharacter::TakeDamage(float Damage, FDamageEvent const & DamageEvent, 
 
 bool ARPGCharacter::IsAttack() const
 {
+	// 무기가 없고 공격중이 아니며 공격 애니메이션이 있을 때 공격 가능
 	return CurrentWeapon != nullptr && !bIsAttacking && AttackAnims.Num() > 0;
 }
 
@@ -191,6 +196,7 @@ void ARPGCharacter::StopAttack()
 void ARPGCharacter::ComboAttack()
 {
 	bIsAttacking = true;
+	// 이미 데미지를 준 액터 배열을 초기화
 	CurrentWeapon->SetResetActorArray();
 	if (AttackIndex >= AttackAnims.Num())
 	{
@@ -261,8 +267,6 @@ void ARPGCharacter::AddItem(ABaseItem * Item)
 		{
 			Item->OnUsed(this);
 			CurrentWeapon = Cast<AWeaponItem>(Item);
-			/*CurrentWeapon = Item;
-			CurrentWeapon->OnUsed(this);*/
 		}
 		else
 		{
