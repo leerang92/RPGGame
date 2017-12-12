@@ -22,9 +22,9 @@ public:
 
 	FORCEINLINE FItemInfo GetItemInfo() const { return ItemInfo; }
 
-protected:
+	UFUNCTION(BlueprintCallable, Category = UI)
 	virtual void OnUsed() override;
-	
+
 private:
 	FItemInfo ItemInfo;
 

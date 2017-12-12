@@ -123,7 +123,6 @@ void ARPGCharacter::Tick(float DeltaSecondes)
 		MainHUD->ActiveGetUI(true);
 		bPickupItem = true;
 	}
-
 }
 
 void ARPGCharacter::TurnAtRate(float Rate)

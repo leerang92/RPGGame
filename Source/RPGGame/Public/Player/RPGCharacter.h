@@ -85,6 +85,11 @@ public:
 
 	void StopAttackAnim();
 
+	/* 공격 */
+	void StartAttack();
+
+	void StopAttack();
+
 public:
 	/* 공격 */
 	virtual float TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser);
@@ -120,6 +125,9 @@ public:
 	// 무기 교체
 	void SwapWeapon(TSubclassOf<ABaseItem> Item);
 
+	// 아이템 줍기 함수
+	UFUNCTION(BlueprintCallable, Category = Item)
+	void PickupItem();
 private:
 	/* UI */
 	UPROPERTY()
@@ -133,10 +141,6 @@ private:
 	int AttackIndex;
 
 	bool bPlayAttack;
-
-	void StartAttack();
-
-	void StopAttack();
 
 	/* 체력 */
 	float HP;
@@ -172,6 +176,4 @@ private:
 	// 줍기 가능한 아이템 반환 함수
 	ABaseItem* GetPickupItem() const;
 
-	// 아이템 줍기 함수
-	void PickupItem();
 };

@@ -29,13 +29,13 @@ void UMainHUD::ActiveInventory()
 	if (!bInventory) // 인벤토리 활성화
 	{
 		InventoryUI->SetVisibility(ESlateVisibility::Visible);
-		ShowMouseCursor(true);
+		//ShowMouseCursor(true);
 		bInventory = true;
 	}
 	else // 인벤토리 비활성화
 	{
 		InventoryUI->SetVisibility(ESlateVisibility::Hidden);
-		ShowMouseCursor(false);
+		//ShowMouseCursor(false);
 		bInventory = false;
 	}
 }
